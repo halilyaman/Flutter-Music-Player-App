@@ -1,111 +1,273 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:music_player_app/bottom_controls.dart';
+import 'package:music_player_app/songs.dart';
+import 'package:music_player_app/theme.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: '',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
+
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
+
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios
+          ),
+          color: const Color(0xFFDDDDDD),
+          onPressed: (){},
+        ),
+        title: Text(""),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.menu
+            ),
+            color: const Color(0xFFDDDDDD),
+            onPressed: (){},
+          ),
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          // Seek bar
+          Expanded(
+            child: Center(
+              child: Container(
+                height: 150.0,
+                width: 150.0,
+                child: RadialSeekBar(
+                  trackColor: Color(0xFFDDDDDD),
+                  progressPercent: 0.25,
+                  progressColor: accentColor,
+                  thumbPosition: 0.25,
+                  thumbColor: lightAccentColor,
+                  innerPadding: EdgeInsets.all(10.0),
+                  child: ClipOval(
+                    clipper: CircleClipper(),
+                    child: Image.network(
+                      demoPlaylist.songs[1].albumArtUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Visualizer
+          Container(
+            width: double.infinity,
+            height: 125.0,
+          ),
+
+          // Song title, artist name and controls
+          new BottomControls(),
+        ],
+      ),
+    );
+  }
+}
+
+class RadialSeekBar extends StatefulWidget {
+
+  final double trackWidth;
+  final Color trackColor;
+  final double progressWidth;
+  final Color progressColor;
+  final double progressPercent;
+  final double thumbSize;
+  final Color thumbColor;
+  final double thumbPosition;
+  final EdgeInsets outerPadding;
+  final EdgeInsets innerPadding;
+  final Widget child;
+
+  RadialSeekBar({
+    @required this.child,
+    this.progressPercent = 0.0,
+    this.progressColor = Colors.black,
+    this.progressWidth = 5.0,
+    this.thumbPosition = 0.0,
+    this.thumbColor = Colors.black,
+    this.thumbSize = 12.0,
+    this.trackColor = Colors.grey,
+    this.trackWidth = 3.0,
+    this.outerPadding = const EdgeInsets.all(0.0),
+    this.innerPadding = const EdgeInsets.all(0.0),
+  });
+
+  @override
+  _RadialSeekBarState createState() => _RadialSeekBarState();
+}
+
+class _RadialSeekBarState extends State<RadialSeekBar> {
+
+  EdgeInsets _insetsForPainter() {
+
+    final outerThickness = max(
+      widget.thumbSize,
+      max(
+        widget.progressWidth,
+        widget.trackWidth
+      )
+    ) / 2.0;
+
+    return EdgeInsets.all(outerThickness);
+
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+    return Padding(
+      padding: widget.outerPadding,
+      child: CustomPaint(
+        foregroundPainter: RadialSeekBarPainter(
+          trackWidth: widget.trackWidth,
+          trackColor: widget.trackColor,
+          progressWidth: widget.progressWidth,
+          progressColor: widget.progressColor,
+          progressPercent: widget.progressPercent,
+          thumbSize: widget.thumbSize,
+          thumbColor: widget.thumbColor,
+          thumbPosition: widget.thumbPosition,
+        ),
+        child: Padding(
+          padding: _insetsForPainter() + widget.innerPadding,
+          child: widget.child,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+class RadialSeekBarPainter extends CustomPainter{
+
+  final double trackWidth;
+  final Paint trackPaint;
+  final double progressWidth;
+  final double progressPercent;
+  final Paint progressPaint;
+  final double thumbSize;
+  final double thumbPosition;
+  final Paint thumbPaint;
+
+  RadialSeekBarPainter({
+    @required this.progressPercent,
+    @required progressColor,
+    @required this.progressWidth,
+    @required this.thumbPosition,
+    @required thumbColor,
+    @required this.thumbSize,
+    @required trackColor,
+    @required this.trackWidth,
+  }) : trackPaint = Paint()
+        ..color = trackColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = trackWidth,
+       progressPaint = Paint()
+        ..color = progressColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = progressWidth
+        ..strokeCap = StrokeCap.round,
+       thumbPaint = Paint()
+        ..color = thumbColor
+        ..style = PaintingStyle.fill;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+
+    final outerThickness = max(trackWidth, max(progressWidth, thumbSize));
+    Size constrainedSize = Size(
+      size.width - outerThickness,
+      size.height - outerThickness
+    );
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(constrainedSize.width, constrainedSize.height) / 2;
+
+    // Paint track.
+    canvas.drawCircle(
+      center,
+      radius,
+      trackPaint
+    );
+
+    // Paint progress.
+    final progressAngle = 2 * pi * progressPercent;
+    canvas.drawArc(
+      Rect.fromCircle(
+        center: center,
+        radius: radius,
+      ),
+      -pi / 2,
+      progressAngle,
+      false,
+      progressPaint
+    );
+
+    // Paint thumb.
+    final thumbAngle = 2 * pi * thumbPosition - (pi / 2);
+    final thumbX = cos(thumbAngle) * radius;
+    final thumbY = sin(thumbAngle) * radius;
+    final thumbCenter = Offset(thumbX, thumbY) + center;
+    final thumbRadius = thumbSize / 2;
+    canvas.drawCircle(
+      thumbCenter,
+      thumbRadius,
+      thumbPaint
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+
+    return true;
+  }
+
+}
+
+class CircleClipper extends CustomClipper<Rect> {
+  @override
+  getClip(Size size) {
+    return Rect.fromCircle(
+      center: Offset(size.width / 2, size.height / 2),
+      radius: min(size.width, size.height) / 2,
+    );
+  }
+
+  @override
+  bool shouldReclip(CustomClipper oldClipper) {
+
+    return true;
+  }
+
 }
