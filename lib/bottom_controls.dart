@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:fluttery_audio/fluttery_audio.dart';
+import 'package:music_player_app/songs.dart';
 import 'package:music_player_app/theme.dart';
 
 class BottomControls extends StatelessWidget {
@@ -19,31 +20,39 @@ class BottomControls extends StatelessWidget {
           padding: const EdgeInsets.only(top: 40.0, bottom: 50.0),
           child: Column(
             children: <Widget>[
-              RichText(
-                text: TextSpan(
-                  text: '',
-                  children: [
-                    TextSpan(
-                      text: 'Song Title\n',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 4.0,
-                        height: 1.5
-                      )
+              AudioPlaylistComponent(
+                playlistBuilder: (BuildContext context, Playlist playlist, Widget child) {
+                  final String songTitle = demoPlaylist.songs[playlist.activeIndex].songTitle;
+                  final String artist = demoPlaylist.songs[playlist.activeIndex].artist;
+
+                  return RichText(
+                    text: TextSpan(
+                      text: '',
+                      children: [
+                        TextSpan(
+                          text: '${songTitle.toUpperCase()}\n',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 4.0,
+                            height: 1.5
+                          )
+                        ),
+                        TextSpan(
+                          text: artist,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.75),
+                            fontSize: 12.0,
+                            letterSpacing: 3.0,
+                            height: 1.5,
+                          ),
+                        ),
+                      ],
                     ),
-                    TextSpan(
-                      text: 'Artist Name',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.75),
-                        fontSize: 12.0,
-                        letterSpacing: 3.0,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
+                    textAlign: TextAlign.center,
+                  );
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 34.6),
@@ -130,18 +139,18 @@ class PreviousButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      splashColor: lightAccentColor,
-      highlightColor: Colors.transparent,
-      icon: Icon(
-        Icons.skip_previous,
-        color: Colors.white,
-        size: 35.0,
-      ),
-      onPressed: () {
-
-        // TODO: previous music
-
+    return AudioPlaylistComponent(
+      playlistBuilder: (BuildContext context, Playlist playlist, Widget child) {
+        return IconButton(
+          splashColor: lightAccentColor,
+          highlightColor: Colors.transparent,
+          icon: Icon(
+            Icons.skip_previous,
+            color: Colors.white,
+            size: 35.0,
+          ),
+          onPressed: playlist.previous,
+        );
       },
     );
   }
@@ -154,18 +163,18 @@ class NextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      splashColor: lightAccentColor,
-      highlightColor: Colors.transparent,
-      icon: Icon(
-        Icons.skip_next,
-        color: Colors.white,
-        size: 35.0,
-      ),
-      onPressed: () {
-
-        // TODO: next music
-
+    return AudioPlaylistComponent(
+      playlistBuilder: (BuildContext context, Playlist playlist, Widget child) {
+        return IconButton(
+          splashColor: lightAccentColor,
+          highlightColor: Colors.transparent,
+          icon: Icon(
+            Icons.skip_next,
+            color: Colors.white,
+            size: 35.0,
+          ),
+          onPressed: playlist.next,
+        );
       },
     );
   }

@@ -36,8 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Audio(
-      audioUrl: demoPlaylist.songs[0].audioUrl,
+    return AudioPlaylist(
+      playlist: demoPlaylist.songs.map((DemoSong song) {
+        return song.audioUrl;
+      }).toList(growable: false),
       playbackState: PlaybackState.paused,
       child: Scaffold(
         appBar: AppBar(
@@ -65,14 +67,33 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             // Seek bar
             Expanded(
-              child: AudioRadialSeekBar()
+              child: AudioPlaylistComponent(
+                playlistBuilder: (BuildContext context, Playlist playlist, Widget child){
+                  String albumArtUrl = demoPlaylist.songs[playlist.activeIndex].albumArtUrl;
+
+                  return AudioRadialSeekBar(
+                    albumArtUrl: albumArtUrl
+                  );
+                },
+              )
             ),
 
             // Visualizer
             Container(
               width: double.infinity,
               height: 125.0,
-              color: Colors.blue,
+              child: Visualizer(
+                builder: (BuildContext context, List<int> fft) {
+                  return CustomPaint(
+                    painter: VisualizerPainter(
+                      fft: fft,
+                      height: 125.0,
+                      color: accentColor
+                    ),
+                    child: Container(),
+                  );
+                },
+              ),
             ),
 
             // Song title, artist name and controls
@@ -84,7 +105,39 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class VisualizerPainter extends CustomPainter{
+  final List<int> fft;
+  final double height;
+  final Color color;
+  final Paint wavePaint;
+
+  VisualizerPainter({
+    this.fft,
+    this.height,
+    this.color,
+  }) : wavePaint = Paint()
+      ..color = color.withOpacity(0.75)
+      ..style = PaintingStyle.fill;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Rect.fromLTWH(0.0, 0.0, size.width, size.height),
+      wavePaint
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
+  }
+
+}
+
 class AudioRadialSeekBar extends StatefulWidget {
+  final String albumArtUrl;
+  AudioRadialSeekBar({this.albumArtUrl});
+
   @override
   _AudioRadialSeekBarState createState() => _AudioRadialSeekBarState();
 }
@@ -108,7 +161,7 @@ class _AudioRadialSeekBarState extends State<AudioRadialSeekBar> {
         _seekPercent = player.isSeeking ? _seekPercent : null;
 
         return RadialSeekBar(
-          progress: playbackProgress >= 0.99 ? 0.0 : playbackProgress,
+          progress: playbackProgress,
           seekPercent: _seekPercent,
           onSeekRequested: (double seekPercent) {
             setState(() {
@@ -117,6 +170,13 @@ class _AudioRadialSeekBarState extends State<AudioRadialSeekBar> {
             final seekMillis = (player.audioLength.inMilliseconds * seekPercent).round();
             player.seek(Duration(milliseconds: seekMillis));
           },
+          child: Container(
+            color: accentColor,
+            child: Image.network(
+              widget.albumArtUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
         );
       },
     );
@@ -129,11 +189,13 @@ class RadialSeekBar extends StatefulWidget {
   final double progress;
   final double seekPercent;
   final Function onSeekRequested;
+  final Widget child;
 
   RadialSeekBar({
     this.seekPercent = 0.0,
     this.progress = 0.0,
-    this.onSeekRequested
+    this.onSeekRequested,
+    this.child
   });
 
   @override
@@ -216,10 +278,7 @@ class _RadialSeekBarState extends State<RadialSeekBar> {
               innerPadding: EdgeInsets.all(10.0),
               child: ClipOval(
                 clipper: CircleClipper(),
-                child: Image.network(
-                  demoPlaylist.songs[1].albumArtUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: widget.child,
               ),
             ),
           ),

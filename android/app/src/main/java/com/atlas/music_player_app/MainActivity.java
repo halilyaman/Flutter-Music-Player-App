@@ -1,6 +1,11 @@
 package com.atlas.music_player_app;
 
 import android.os.Bundle;
+import android.content.pm.PackageManager;
+import android.Manifest;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.app.ActivityCompat;
+
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
@@ -9,5 +14,16 @@ public class MainActivity extends FlutterActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     GeneratedPluginRegistrant.registerWith(this);
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+            != PackageManager.PERMISSION_GRANTED) {
+      ActivityCompat.requestPermissions(this,
+         new String[]{Manifest.permission.RECORD_AUDIO}, 1000);
+    }
   }
 }
