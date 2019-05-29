@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:music_player_app/bottom_controls.dart';
 import 'package:music_player_app/radial_seek_bar.dart';
 import 'package:music_player_app/songs.dart';
-import 'package:music_player_app/theme.dart';
 import 'package:fluttery_audio/fluttery_audio.dart';
+import 'package:music_player_app/visualizer.dart';
 
 void main() => runApp(MyApp());
 
@@ -68,22 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
             new SeekBarControls(),
 
             // Visualizer
-            Container(
-              width: double.infinity,
-              height: 125.0,
-              child: Visualizer(
-                builder: (BuildContext context, List<int> fft) {
-                  return CustomPaint(
-                    painter: VisualizerPainter(
-                      fft: fft,
-                      height: 125.0,
-                      color: accentColor
-                    ),
-                    child: Container(),
-                  );
-                },
-              ),
-            ),
+            new MusicVisualizer(),
 
             // Song title, artist name and controls
             new BottomControls(),
@@ -92,33 +77,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
-
-class VisualizerPainter extends CustomPainter{
-  final List<int> fft;
-  final double height;
-  final Color color;
-  final Paint wavePaint;
-
-  VisualizerPainter({
-    this.fft,
-    this.height,
-    this.color,
-  }) : wavePaint = Paint()
-      ..color = color.withOpacity(0.75)
-      ..style = PaintingStyle.fill;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Rect.fromLTWH(0.0, 0.0, size.width, size.height),
-      wavePaint
-    );
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
-
 }
