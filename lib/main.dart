@@ -17,8 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: '',
       theme: ThemeData(
-
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.brown,
       ),
       home: MyHomePage(),
     );
@@ -43,25 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
       playbackState: PlaybackState.paused,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0.0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios
-            ),
-            color: darkAccentColor,
-            onPressed: (){},
+          backgroundColor: lightAccentColor,
+        ),
+        drawer: Drawer(
+          child: ListView(
+            children: _renderMusicList(),
           ),
-          title: Text(""),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.menu
-              ),
-              color: darkAccentColor,
-              onPressed: (){},
-            ),
-          ],
         ),
         body: Column(
           children: <Widget>[
@@ -77,5 +63,29 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  List<Widget> _renderMusicList() {
+
+    List<AudioPlaylistComponent> musicList = new List<AudioPlaylistComponent>();
+
+    for(int i = 0 ; i < demoPlaylist.songs.length; ++i) {
+      musicList.add(
+        AudioPlaylistComponent(
+          playlistBuilder: (BuildContext context, Playlist playlist, Widget widget) {
+            return ListTile(
+              title: Text(demoPlaylist.songs[i].songTitle),
+              subtitle: Text(demoPlaylist.songs[i].artist),
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(demoPlaylist.songs[i].albumArtUrl),
+              ),
+              onTap: () {
+              },
+            );
+          },
+        )
+      );
+    }
+    return musicList;
   }
 }
