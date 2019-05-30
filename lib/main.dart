@@ -4,6 +4,7 @@ import 'package:music_player_app/bottom_controls.dart';
 import 'package:music_player_app/radial_seek_bar.dart';
 import 'package:music_player_app/songs.dart';
 import 'package:fluttery_audio/fluttery_audio.dart';
+import 'package:music_player_app/theme.dart';
 import 'package:music_player_app/visualizer.dart';
 
 void main() => runApp(MyApp());
@@ -48,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(
               Icons.arrow_back_ios
             ),
-            color: const Color(0xFF2A7C9C),
+            color: darkAccentColor,
             onPressed: (){},
           ),
           title: Text(""),
@@ -57,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(
                 Icons.menu
               ),
-              color: const Color(0xFF2A7C9C),
+              color: darkAccentColor,
               onPressed: (){},
             ),
           ],

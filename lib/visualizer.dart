@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttery_audio/fluttery_audio.dart';
 import 'package:music_player_app/theme.dart';
@@ -43,16 +45,18 @@ class VisualizerPainter extends CustomPainter{
     ..style = PaintingStyle.fill;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    _renderWaves(canvas, size);
+  void paint(Canvas canvas, Size size) async {
+    await _renderWaves(canvas, size);
   }
 
-  void _renderWaves(Canvas canvas, Size size) {
+  Future<void> _renderWaves(Canvas canvas, Size size) {
     final histogramLow = _createHistogram(fft, 15, 2, ((fft.length) / 4).floor());
     final histogramHigh = _createHistogram(fft, 15, (fft.length / 4).ceil(), (fft.length / 2).floor());
 
     _renderHistogram(canvas, size, histogramLow);
     _renderHistogram(canvas, size, histogramHigh);
+    sleep(Duration(milliseconds: 1));
+    return null;
   }
 
   void _renderHistogram(Canvas canvas, Size size, List<int> histogram) {
@@ -113,7 +117,7 @@ class VisualizerPainter extends CustomPainter{
       }
 
       int bucketIndex = ((i - start) / samplesPerBucket).floor();
-      histogram[bucketIndex] = samples[i];
+      histogram[bucketIndex] += samples[i];
     }
 
     // Massage the data for visualization
