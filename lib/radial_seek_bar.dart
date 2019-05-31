@@ -6,19 +6,29 @@ import 'package:fluttery_audio/fluttery_audio.dart';
 import 'package:music_player_app/songs.dart';
 import 'package:music_player_app/theme.dart';
 
-class SeekBarControls extends StatelessWidget {
-  const SeekBarControls({
+class SeekBarControls extends StatefulWidget {
+  final String albumArtUrl;
+  final int activeSoundIndex;
+  SeekBarControls({
     Key key,
+    this.albumArtUrl,
+    this.activeSoundIndex
   }) : super(key: key);
 
+  @override
+  _SeekBarControlsState createState() => _SeekBarControlsState();
+}
+
+class _SeekBarControlsState extends State<SeekBarControls> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: AudioPlaylistComponent(
-        playlistBuilder: (BuildContext context, Playlist playlist, Widget child){
+        playlistBuilder: (BuildContext context, Playlist playlist, Widget child) {
           String albumArtUrl = demoPlaylist.songs[playlist.activeIndex].albumArtUrl;
           return AudioRadialSeekBar(
-            albumArtUrl: albumArtUrl
+            albumArtUrl: widget.activeSoundIndex != null ?
+                demoPlaylist.songs[widget.activeSoundIndex].albumArtUrl : albumArtUrl,
           );
         },
       )

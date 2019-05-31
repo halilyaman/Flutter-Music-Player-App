@@ -1,12 +1,20 @@
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttery_audio/fluttery_audio.dart';
 import 'package:music_player_app/songs.dart';
 import 'package:music_player_app/theme.dart';
 
 class BottomControls extends StatelessWidget {
-  const BottomControls({
+  final int activeSoundIndex;
+  final Function increaseSoundIndex;
+  final Function decreaseSoundIndex;
+
+  BottomControls({
     Key key,
+    this.activeSoundIndex,
+    this.increaseSoundIndex,
+    this.decreaseSoundIndex,
   }) : super(key: key);
 
   @override
@@ -30,7 +38,9 @@ class BottomControls extends StatelessWidget {
                       text: '',
                       children: [
                         TextSpan(
-                          text: '${songTitle.toUpperCase()}\n',
+                          text: '${activeSoundIndex != null ?
+                                    demoPlaylist.songs[activeSoundIndex].songTitle.toUpperCase() :
+                                    songTitle}\n',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 14.0,
@@ -40,7 +50,9 @@ class BottomControls extends StatelessWidget {
                           )
                         ),
                         TextSpan(
-                          text: artist,
+                          text: '${activeSoundIndex != null ?
+                                    demoPlaylist.songs[activeSoundIndex].artist :
+                                    artist}',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.75),
                             fontSize: 12.0,
@@ -60,7 +72,10 @@ class BottomControls extends StatelessWidget {
                   children: <Widget>[
                     Expanded(child: Container(),),
 
-                    new PreviousButton(),
+                    new PreviousButton(
+                      decreaseSoundIndex: decreaseSoundIndex,
+                      activeSoundIndex: activeSoundIndex
+                    ),
 
                     Expanded(child: Container(),),
 
@@ -68,7 +83,10 @@ class BottomControls extends StatelessWidget {
 
                     Expanded(child: Container(),),
 
-                    new NextButton(),
+                    new NextButton(
+                      increaseSoundIndex: increaseSoundIndex,
+                      activeSoundIndex: activeSoundIndex
+                    ),
 
                     Expanded(child: Container(),),
                   ],
@@ -133,8 +151,13 @@ class PlayPauseButton extends StatelessWidget {
 }
 
 class PreviousButton extends StatelessWidget {
+  final Function decreaseSoundIndex;
+  final int activeSoundIndex;
+
   const PreviousButton({
     Key key,
+    this.decreaseSoundIndex,
+    this.activeSoundIndex,
   }) : super(key: key);
 
   @override
@@ -149,7 +172,14 @@ class PreviousButton extends StatelessWidget {
             color: Colors.white,
             size: 35.0,
           ),
-          onPressed: playlist.previous,
+          onPressed: () {
+            if(activeSoundIndex == null) {
+              playlist.previous();
+            } else {
+              decreaseSoundIndex();
+              playlist.audioPlayer.loadMedia(Uri.parse(demoPlaylist.songs[activeSoundIndex-1].audioUrl));
+            }
+          },
         );
       },
     );
@@ -157,8 +187,13 @@ class PreviousButton extends StatelessWidget {
 }
 
 class NextButton extends StatelessWidget {
-  const NextButton({
+  final Function increaseSoundIndex;
+  final int activeSoundIndex;
+
+  NextButton({
     Key key,
+    this.increaseSoundIndex,
+    this.activeSoundIndex,
   }) : super(key: key);
 
   @override
@@ -173,7 +208,14 @@ class NextButton extends StatelessWidget {
             color: Colors.white,
             size: 35.0,
           ),
-          onPressed: playlist.next,
+          onPressed: () {
+            if(activeSoundIndex == null) {
+              playlist.next();
+            } else {
+              increaseSoundIndex();
+              playlist.audioPlayer.loadMedia(Uri.parse(demoPlaylist.songs[activeSoundIndex+1].audioUrl));
+            }
+          },
         );
       },
     );

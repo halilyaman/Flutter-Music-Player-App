@@ -32,6 +32,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String songTitle;
+  String artist;
+  int activeSoundIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +55,17 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Column(
           children: <Widget>[
             // Seek bar
-            new SeekBarControls(),
+            new SeekBarControls(activeSoundIndex: activeSoundIndex),
 
             // Visualizer
             new MusicVisualizer(),
 
             // Song title, artist name and controls
-            new BottomControls(),
+            new BottomControls(
+              activeSoundIndex: activeSoundIndex,
+              increaseSoundIndex: _increaseSoundIndex,
+              decreaseSoundIndex: _decreaseSoundIndex
+            ),
           ],
         ),
       ),
@@ -66,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<Widget> _renderMusicList() {
-
     List<AudioPlaylistComponent> musicList = new List<AudioPlaylistComponent>();
 
     for(int i = 0 ; i < demoPlaylist.songs.length; ++i) {
@@ -80,6 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 backgroundImage: NetworkImage(demoPlaylist.songs[i].albumArtUrl),
               ),
               onTap: () {
+                playlist.audioPlayer.loadMedia(Uri.parse(demoPlaylist.songs[i].audioUrl));
+                setState(() {
+                  activeSoundIndex = i;
+                  songTitle = demoPlaylist.songs[activeSoundIndex].songTitle;
+                  artist = demoPlaylist.songs[activeSoundIndex].artist;
+                });
               },
             );
           },
@@ -87,5 +99,25 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
     return musicList;
+  }
+
+  void _increaseSoundIndex() {
+    setState(() {
+      if(activeSoundIndex != null) {
+        if(activeSoundIndex < demoPlaylist.songs.length - 1) {
+          activeSoundIndex++;
+        }
+      }
+    });
+  }
+
+  void _decreaseSoundIndex() {
+    setState(() {
+      if(activeSoundIndex != null) {
+        if(activeSoundIndex > 0) {
+          activeSoundIndex--;
+        }
+      }
+    });
   }
 }
